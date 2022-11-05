@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  web:
+    image: fukoy/nginx-php-fpm:php7.4
+    ports:
+      - '8090:80' #开放端口8090
+    restart: always
+    volumes:
+      - ./www:/usr/share/nginx/typecho/ #typecho网站文件
+      - ./nginx/conf.d:/etc/nginx/conf.d #nginx配置文件夹
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf #nginx配置文件
+    depends_on:
+      - mysql
+    networks:
+      - web
+
+  mysql:
+    image: mariadb
+    restart: always
+    expose:
+      - '3306' #不开放端口
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/logs:/var/log/mysql
+      - ./mysql/conf:/etc/mysql/conf.d
+    env_file:
+      - mysql.env
+    networks:
+      - web
+
+networks:
+  web:
